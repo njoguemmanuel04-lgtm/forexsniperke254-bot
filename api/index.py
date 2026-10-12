@@ -3,7 +3,6 @@ import yfinance as yf
 import os
 from telegram import Bot
 
-# Your bot token from BotFather
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "8905985212:AAHGD1pDMkavJ2_Pk6Ewx2hCN9RuDkKEoB4")
 bot = Bot(token=BOT_TOKEN)
 
@@ -11,7 +10,6 @@ app = Flask(__name__)
 
 def get_gold_signal():
     try:
-        # Gold futures
         data = yf.download("GC=F", period="1d", interval="15m", progress=False, auto_adjust=True)
         if data.empty:
             return "Market closed now. Try during London session 11AM-2PM EAT - best for Gold."
@@ -21,7 +19,6 @@ def get_gold_signal():
         ema20 = float(close.ewm(span=20).mean().iloc[-1])
         ema50 = float(close.ewm(span=50).mean().iloc[-1])
         
-        # Simple logic for FREE demo
         if price > ema20 and ema20 > ema50:
             action = "BUY 🟢"
             sl = price * 0.997
@@ -61,7 +58,6 @@ def webhook():
         if not update:
             return "ok", 200
             
-        # Handle messages
         if "message" in update:
             msg = update["message"]
             chat_id = msg["chat"]["id"]
@@ -87,7 +83,6 @@ Tap /gold to test the flow Chairman"""
             else:
                 bot.send_message(chat_id=chat_id, text="Send /gold for live Gold signal")
 
-        # Handle button clicks
         if "callback_query" in update:
             chat_id = update["callback_query"]["message"]["chat"]["id"]
             bot.send_message(chat_id=chat_id, text=get_gold_signal())
